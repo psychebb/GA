@@ -1,5 +1,5 @@
-%对选择出的两个F进行变异
-function [fc,fd]=transform(fa,fb,c)
+%对选择出的两个f(未编码)进行变异，输出编码后的两个F
+function [Fc,Fd]=transform(fa,fb,c,d)
 Ca = adapt(fa,c);
 Cb = adapt(fb,c);
 [n1] = size(fa);
@@ -13,9 +13,15 @@ Cb = adapt(fb,c);
  if p>pm
      flag = 0;
  end
+ Fa=cell(n(1),1);
+ Fa=coding(fa,c,d);
+ Fc=cell(n(1),1);
+ Fb=cell(n(2),1);
+ Fb=coding(fb,c,d);
+ Fd=cell(n(1),1);
  if flag == 1
-     fc = mutation(fa,c);
-     fd = mutation(fb,c);
+     Fc = mutation(Fa,c);
+     Fd = mutation(Fb,c);
  end
-[fc,fd]
+[Fc,Fd]
  

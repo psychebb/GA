@@ -1,4 +1,4 @@
-%对f进行编码
+%对f进行编码，返回一个cell，内部每一个元素是对应行的编码结果
 function F=coding(f,c,d)
 distance = c(1,1)-1;
 [n,m] = size(f);

@@ -1,4 +1,5 @@
-%对编码后的f解码
+%在编码后的F（cell格式）取其每一个元素（即一个编码后的行向量）f进行解码，
+%返回对应的行向量
 function f = decoding(f,c)
 [n m] = size(f);
 distance = c(1,1)-1;
