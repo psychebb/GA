@@ -1,81 +1,123 @@
-%两点交叉
-function [f1,f2]=cross(f1,f2,d,c)
-
+%两点交叉 输入编码后的F，以及信道数m 输出编码后的F
+function [F1,F2]=cross(F1,F2,d,c,m)
+distance = c(1,1)-1;
+[n]=size(F1);
+n=n(1);
+row_length = [];
+for i = 1:n
+	row_length(i) = length(F1{i});
+end
+for i = 1:n
+    row_length1(i) = length(F2{i});
+end
+row_start = ones(1,n);
 %定位交叉点的行 列
-  [n,m] = size(f1);
+  for i = 1:n-1
+      row_start(i+1) = row_start(i) + row_length(i);
+  end
   [a,b] = index(n,m,d,c);
-  ai = ceil(a/n);
-  aj = mod(a,m);
-  if aj == 0
-      aj = m;
-  end
-  bi = ceil(b/n);
-  bj = mod(b,m);
-  if bj == 0
-      bj = m;
-  end
-  
-%交叉点在同一行
-  if ai == bi
-      flag = aj;
-    for j = aj:1:bj
-        if f1(ai,j) ~= f1(ai,flag) && f2(ai,j) ~= f2(ai,flag)
-          [f1(ai,flag) f1(ai,j)] = deal(f1(ai,j),f1(ai,flag));
-          [f2(ai,flag) f2(ai,j)] = deal(f2(ai,j),f2(ai,flag));
-          flag = j;
-      elseif f1(ai,j) ~= f1(ai,flag) || f2(ai,j) ~= f2(ai,flag)
-          flag = j;
-        end
+  for i = 1:n-1
+    if a >= row_start(i) && a < row_start(i+1)
+	  ai = i;
+	  break
     end
-  else  %a b不在同一行
-   flag = aj
-   for j = aj:1:m
-        if f1(ai,j) ~= f1(ai,flag) && f2(ai,j) ~= f2(ai,flag)
-          [f1(ai,flag),f1(ai,j)] = deal(f1(ai,j),f1(ai,flag));
-          [f2(ai,flag),f2(ai,j)] = deal(f2(ai,j),f2(ai,flag));
-          flag = j;
-      elseif f1(ai,j) ~= f1(ai,flag) || f2(ai,j) ~= f2(ai,flag)
-          flag = j;
-        end
-   end
-      %中间整行交叉  
-      %交叉点在上下相邻的两行
-      if bi == ai+1
-          flag =1;
-          for j = 1:1:bj
-              if f1(bi,j) ~= f1(bi,flag) && f2(bi,j) ~= f2(bi,flag)
-                  [f1(bi,flag),f1(bi,j)] = deal(f1(bi,j),f1(bi,flag));
-                  [f2(bi,flag),f2(bi,j)] = deal(f2(bi,j),f2(bi,flag));
-                  flag = j;
-              elseif f1(bi,j) ~= f1(bi,flag) || f2(bi,j) ~= f2(bi,flag)
-                  flag = j;
-              end
-          end
-      end
-      %交叉点之间夹了不止一行
-      if bi > ai+1  
-          for i = ai+1:1:bi-1
-              flag = 1;
-              for j = 1:1:m
-                  if f1(i,j) ~= f1(i,flag) && f2(i,j) ~= f2(i,flag)
-                      [f1(i,flag),f1(i,j)] = deal(f1(i,j),f1(i,flag));
-                      [f2(i,flag),f2(i,j)] = deal(f2(i,j),f2(i,flag));
-                      flag = j;
-                  elseif f1(i,j) ~= f1(i,flag) || f2(i,j) ~= f2(i,flag)
-                      flag = j;
-                  end
-              end
-          end
-          flag = 1;
-          for j = 1:1:bj
-              if f1(bi,j) ~= f1(bi,flag) && f2(bi,j) ~= f2(bi,flag)
-                  [f1(bi,flag) f1(bi,j)] = deal(f1(bi,j),f1(bi,flag));
-                  [f2(bi,flag) f2(bi,j)] = deal(f2(bi,j),f2(bi,flag));
-                  flag = j;
-              elseif f1(bi,j) ~= f1(bi,flag) || f2(bi,j) ~= f2(bi,flag)
-                  flag = j;
-              end
-          end
-      end
   end
-[f1,f2]
+  if a >= row_start(n)
+    ai = n;
+  end
+  aj = a - row_start(ai);
+  if aj == 0
+      aj = 1;
+  end
+  for i = 1:n-1
+    if b >= row_start(i) && b < row_start(i+1)
+	  bi = i;
+	  break
+	end
+  end
+  if b >= row_start(n)
+    bi = n;
+  end
+  bj = b - row_start(bi);
+  if bj == 0
+    bj = 1;
+  end
+  disp('=============')
+  disp(row_length)
+  disp(row_length1)
+  disp('++++++++++++++++')
+  disp(row_length == row_length1)
+  disp('===============')
+  disp('ai aj')
+  disp(ai)
+  disp(aj)
+  disp('bi bj')
+  disp(bi)
+  disp(bj)
+%开始交叉如果交叉点在同一行
+  if ai == bi
+    flag = aj;
+    for j = aj:1:bj
+      if F1{ai}(j) ~= F1{ai}(flag) && F2{ai}(j) ~= F2{ai}(flag)
+	    [F1{ai}(flag) F1{ai}(j)] = deal(F1{ai}(j),F1{ai}(flag));
+        [F2{ai}(flag) F2{ai}(j)] = deal(F2{ai}(j),F2{ai}(flag));
+	    flag = j;
+	  elseif F1{ai}(j) ~= F1{ai}(flag) || F2{ai}(j) ~= F2{ai}(flag)
+	    flag = j;
+	  end
+    end
+    %如果交叉点不在同一行 
+  else
+      %先交叉ai所在的一行
+    flag = aj;
+    for j = aj:1:row_length(ai)
+      if F1{ai}(j) ~= F1{ai}(flag) && F2{ai}(j) ~= F2{ai}(flag)
+		 [F1{ai}(flag) F1{ai}(j)] = deal(F1{ai}(j),F1{ai}(flag));
+	     [F2{ai}(flag) F2{ai}(j)] = deal(F2{ai}(j),F2{ai}(flag));
+		 flag = j;
+	  elseif F1{ai}(j) ~= F1{ai}(flag) || F2{ai}(j) ~= F2{ai}(flag)
+		 flag = j;
+	  end
+    end
+	%再交叉ai的下面的行
+    flag = 1;
+    %如果bi在ai的下一行
+    if bi == ai+1
+    for j = 1:bj
+      if F1{bi}(j) ~= F1{bi}(flag) && F2{bi}(j) ~= F2{bi}(flag)
+        [F1{bi}(flag) F1{bi}(j)] = deal(F1{bi}(j),F1{bi}(flag));
+	    [F2{bi}(flag) F2{bi}(j)] = deal(F2{bi}(j),F2{bi}(flag));
+		flag = j;
+	  elseif F1{bi}(j) ~= F1{bi}(flag) || F2{bi}(j) ~= F2{bi}(flag)
+		flag = j;
+	  end
+    end
+    end
+	%如果bi和ai之间不止一行
+	if bi > ai + 1
+        %先交叉之间的行
+	  for i = ai + 1 : bi - 1
+	   flag = 1;
+	   for j = 1:row_length(i)
+	     if F1{i}(j) ~= F1{i}(flag) && F2{i}(j) ~= F2{i}(flag)
+	       [F1{i}(flag) F1{i}(j)] = deal(F1{i}(j),F1{i}(flag));
+		   [F2{i}(flag) F2{i}(j)] = deal(F2{i}(j),F2{i}(flag));
+		   flag = j;
+		 elseif F1{i}(j) ~= F1{i}(flag) || F2{i}(j) ~= F2{i}(flag)
+		   flag = j;
+		 end
+	   end
+      end
+      %在交叉bi所在的行
+      flag = 1;
+       for j = 1:bj
+      if F1{bi}(j) ~= F1{bi}(flag) && F2{bi}(j) ~= F2{bi}(flag)
+        [F1{bi}(flag) F1{bi}(j)] = deal(F1{bi}(j),F1{bi}(flag));
+	    [F2{bi}(flag) F2{bi}(j)] = deal(F2{bi}(j),F2{bi}(flag));
+		flag = j;
+	  elseif F1{bi}(j) ~= F1{bi}(flag) || F2{bi}(j) ~= F2{bi}(flag)
+		flag = j;
+	  end
+    end
+    end
+  end

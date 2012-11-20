@@ -19,7 +19,7 @@ for i = 1:1:n
             j = j+1;
 		else 
 			f1(1,k) = 1;
-            j = j+5;
+            j = j+distance+1;
             k = k+1;
         end
     end
